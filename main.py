@@ -5,6 +5,7 @@ otherwise /output. Standard library only; no network, randomness or clock.
 """
 
 import os
+import sys
 
 ENTRY = (
     "LGTM. The linter is green, the CI is green, and I've begun to "
@@ -14,7 +15,11 @@ ENTRY = (
 
 def main():
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output"
-    os.makedirs(out_dir, exist_ok=True)
+    try:
+        os.makedirs(out_dir, exist_ok=True)
+    except OSError as exc:
+        print(f"error: cannot create output directory {out_dir!r}: {exc}", file=sys.stderr)
+        raise SystemExit(1)
     with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as fh:
         fh.write(ENTRY + "\n")
 
